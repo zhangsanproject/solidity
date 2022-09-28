@@ -2,24 +2,31 @@
 pragma solidity ^0.8.4;
 
 contract BlindAuction {
+    //声明一个结构体
     struct Bid {
         bytes32 blindedBid;
         uint deposit;
     }
-
+    //声明一个可支付的地址
     address payable public beneficiary;
+    //竞拍结束时间
     uint public biddingEnd;
+    //公示结束时间
     uint public revealEnd;
+    //竞拍结束标志
     bool public ended;
-
+    //声明一个map  key值为地址类型  value值为Bid结构体
     mapping(address => Bid[]) public bids;
 
+    //最高出价人的地址
     address public highestBidder;
+    //最高出价金额
     uint public highestBid;
 
     // 可以取回的之前的出价
     mapping(address => uint) pendingReturns;
 
+    //事件 通知最好出价者和最高出价金额的事件
     event AuctionEnded(address winner, uint highestBid);
 
 
@@ -27,6 +34,7 @@ contract BlindAuction {
 
     /// The function has been called too early.
     /// Try again at `time`.
+    //拍卖还没开始  过早的竞拍 报这个错误
     error TooEarly(uint time);
     /// The function has been called too late.
     /// It cannot be called after `time`.
@@ -46,6 +54,7 @@ contract BlindAuction {
         _;
     }
 
+    //构造方法
     constructor(
         uint biddingTime,
         uint revealTime,
